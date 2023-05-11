@@ -1,20 +1,19 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using QueryPack.DispatchProxy.Extensions;
-
-namespace QueryPack.DispatchProxy.Examples
+﻿namespace QueryPack.DispatchProxy.Examples
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+    using Extensions;
+
     class Program
     {
         static async Task Main(string[] args)
         {
-
             var services = new ServiceCollection();
             services.AddTransient<IEntityService, EntityService>();
             services.AddSingleton<Context>();
-            services.AddInterceptorFor(new EntityInterceptorProxyFactoryBuilder());
+            services.AddInterceptors(typeof(Program).Assembly);
 
             var provider = services.BuildServiceProvider();
             var entitySerice = provider.GetRequiredService<IEntityService>();
@@ -27,8 +26,6 @@ namespace QueryPack.DispatchProxy.Examples
             return Task.FromResult(new EntityResult { });
         }
     }
-
-
 
     interface IEntityService
     {
@@ -80,7 +77,6 @@ namespace QueryPack.DispatchProxy.Examples
                  Console.WriteLine($"Before method call {invoker.MethodName}");
                  await invoker.Invoke();
                  Console.WriteLine("After method is executed");
-
              });
         }
     }
