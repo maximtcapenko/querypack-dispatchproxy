@@ -5,36 +5,38 @@ namespace QueryPack.DispatchProxy.Impl
     using System.Collections.Generic;
     using System.Reflection;
 
-    internal class InterceptMethodOnExecutedProxy<TContext, TTarget> : IInterceptorProxy<TContext, TTarget>
+    internal class InterceptMethodOnExecutingProxy<TContext, TTarget> : IInterceptorProxy<TContext, TTarget>
         where TTarget : class
         where TContext : class
     {
         private readonly Delegate _delegate;
         private readonly MethodInfo _method;
+        private readonly IMethodInvokerFactory<TTarget> _invokerFactory;
         private static ConcurrentDictionary<MethodInfo, Func<object, object[], object>> _interceptors = new ConcurrentDictionary<MethodInfo, Func<object, object[], object>>();
 
-        public InterceptMethodOnExecutedProxy(MethodInfo method, Delegate @delegate)
+        public InterceptMethodOnExecutingProxy(MethodInfo method, Delegate @delegate, IMethodInvokerFactory<TTarget> invokerFactory)
         {
             _method = method;
             _delegate = @delegate;
+            _invokerFactory = invokerFactory;
         }
 
         public bool CanIntercept(MethodInfo method) => _method == method;
 
         public object Intercept(TContext context, TTarget target, MethodInfo targetMethod, object[] args)
         {
-            var result = targetMethod.Invoke(target, args);
             if (targetMethod == _method)
             {
+                var invoker = _invokerFactory.Create(target, targetMethod, args);
                 var method = _interceptors.GetOrAdd(targetMethod, (method) => MethodFactory.CreateGenericMethod<object>(_delegate.GetMethodInfo()));
                 var list = new List<object> { context, target };
                 list.AddRange(args);
-                list.Add(result);
+                list.Add(invoker);
 
                 return method(_delegate.Target, list.ToArray());
             }
 
-            return result;
+            return targetMethod.Invoke(target, args);
         }
     }
 }

@@ -12,17 +12,19 @@ namespace QueryPack.DispatchProxy.Impl
     {
         private readonly MethodInfo _method;
         private Delegate _interceptor;
+        private IMethodInvokerFactory<TTarget> _invokerFactory;
 
-        public InterceptorProxyFactoryImpl(Expression method, Delegate interceptor)
+        public InterceptorProxyFactoryImpl(Expression method, Delegate interceptor, IMethodInvokerFactory<TTarget> invokerFactory)
         {
             var methodResolver = new MethodInfoResolver();
             _method = methodResolver.Resolve(method);
             _interceptor = interceptor;
+            _invokerFactory = invokerFactory;
         }
 
         public IInterceptorProxy<TContext, TTarget> Create()
         {
-            return new InterceptMethodOnExecutedProxy<TContext, TTarget>(_method, _interceptor);
+            return new InterceptMethodOnExecutingProxy<TContext, TTarget>(_method, _interceptor, _invokerFactory);
         }
     }
 }
