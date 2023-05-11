@@ -9,7 +9,7 @@
     <RepositoryUrl>https://github.com/maximtcapenko/querypack-dispatchproxy</RepositoryUrl>
     <Description>Simple interception implementation based on System.Reflection.DispatchProxy</Description>
     <PackageDescription>Simple interception implementation based on System.Reflection.DispatchProxy</PackageDescription>
-    <PackageTags>Proxy;Interception;Reflection;DispatchProxy</PackageTags>
+    <PackageTags>QueryPack;Proxy;Interception;Reflection;DispatchProxy</PackageTags>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>

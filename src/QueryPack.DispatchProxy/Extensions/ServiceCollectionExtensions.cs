@@ -9,6 +9,23 @@ namespace QueryPack.DispatchProxy.Extensions
 
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddInterceptors(this IServiceCollection self, params Assembly[] assemblies)
+        {
+            var method = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddInterceptorFor));
+
+            foreach (var serviceType in assemblies.SelectMany(e => e.GetTypes()))
+            {
+                ReflectionUtils.DoWithGenericInterfaceImpls(serviceType, typeof(InterceptorProxyFactoryBuilder<,>), (@interface, implementation, name) =>
+                {
+                    var genericMethod = method.MakeGenericMethod(@interface.GetGenericArguments());
+                    var instance = Activator.CreateInstance(implementation);
+                    genericMethod.Invoke(null, new object[] { self, instance });
+                });
+            }
+
+            return self;
+        }
+
         public static IServiceCollection AddInterceptorFor<TContext, TTarget>(this IServiceCollection self,
             InterceptorProxyFactoryBuilder<TContext, TTarget> factoryBuilder)
             where TContext : class
@@ -33,7 +50,13 @@ namespace QueryPack.DispatchProxy.Extensions
                 var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
                 addMethodGeneric.Invoke(null, new object[] { self, regestry.ImplementationFactory });
             }
-            
+            if (regestry.ImplementationInstance != null)
+            {
+                var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddInstanceTransient), BindingFlags.Static | BindingFlags.NonPublic);
+                var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
+                addMethodGeneric.Invoke(null, new object[] { self, regestry.ImplementationInstance });
+            }
+
             return self;
         }
 
@@ -52,6 +75,14 @@ namespace QueryPack.DispatchProxy.Extensions
         {
             services.AddTransient(s =>
             InterceptorProxyFactory.Create(s.GetRequiredService<TContext>(), s.GetServices<IInterceptorProxyFactory<TContext, TInterface>>(), (TInterface)factory(s)));
+        }
+
+        private static void AddInstanceTransient<TContext, TInterface>(IServiceCollection services, object instance)
+            where TContext : class
+            where TInterface : class
+        {
+            services.AddTransient(s =>
+            InterceptorProxyFactory.Create(s.GetRequiredService<TContext>(), s.GetServices<IInterceptorProxyFactory<TContext, TInterface>>(), (TInterface)instance));
         }
     }
 }
