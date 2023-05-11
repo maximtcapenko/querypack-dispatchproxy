@@ -14,7 +14,7 @@ namespace QueryPack.DispatchProxy.Examples
             var services = new ServiceCollection();
             services.AddTransient<IEntityService, EntityService>();
             services.AddSingleton<Context>();
-            services.AddInterceptorFor(new EntityInteceptorProxyFactoryBuilder());
+            services.AddInterceptorFor(new EntityInterceptorProxyFactoryBuilder());
 
             var provider = services.BuildServiceProvider();
             var entitySerice = provider.GetRequiredService<IEntityService>();
@@ -59,7 +59,7 @@ namespace QueryPack.DispatchProxy.Examples
     class EntityArg { }
     class Context { }
 
-    class EntityInteceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
+    class EntityInterceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
     {
         public void AddInterceptor(IInterceptorBuilder<Context, IEntityService> interceptorBuilder)
         {

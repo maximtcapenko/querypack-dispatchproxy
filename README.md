@@ -1,4 +1,5 @@
 # QueryPack.DispatchProxy 
+Simple interception implementation based on System.Reflection.DispatchProxy. Allows you to create type-safe interceptors for individual methods. Supports standard dependency injection. Has direct access to intercepted instance.
 
 ## Getting Started
 1. Install the package into your project
@@ -7,7 +8,7 @@ dotnet add package QueryPack.DispatchProxy
 ```
 2. Add interception configuration
 ```c#
-class EntityInteceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
+class EntityInterceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
 {
     public void AddInterceptor(IInterceptorBuilder<Context, IEntityService> interceptorBuilder)
     {
