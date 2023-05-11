@@ -1,4 +1,4 @@
-namespace QueryPack.Reflection.Extensions
+namespace QueryPack.DispatchProxy.Extensions
 {
     using Microsoft.Extensions.DependencyInjection;
     using Impl;

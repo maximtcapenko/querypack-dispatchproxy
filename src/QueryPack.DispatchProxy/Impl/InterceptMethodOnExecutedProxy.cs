@@ -1,4 +1,4 @@
-namespace QueryPack.Reflection.Impl
+namespace QueryPack.DispatchProxy.Impl
 {
     using System;
     using System.Collections.Concurrent;

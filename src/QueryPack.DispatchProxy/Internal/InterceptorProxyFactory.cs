@@ -1,4 +1,4 @@
-namespace QueryPack.Reflection.Internal
+namespace QueryPack.DispatchProxy.Internal
 {
     using System.Collections.Generic;
     using System.Linq;

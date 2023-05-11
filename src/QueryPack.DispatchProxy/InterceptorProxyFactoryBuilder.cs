@@ -1,4 +1,4 @@
-namespace QueryPack.Reflection
+namespace QueryPack.DispatchProxy
 {
     /// <summary>
     /// Builds interceptor's factory

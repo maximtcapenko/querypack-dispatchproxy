@@ -4,10 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{40C46F7D-58B2-4BDB-9395-E208AC3C8F31}"
+	ProjectSection(SolutionItems) = preProject
+		src\README.md = src\README.md
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPack.Reflection", "src\QueryPack.Reflection\QueryPack.Reflection.csproj", "{3EE5BD2A-CD27-432C-8A00-32A7C1AB9CF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPack.DispatchProxy", "src\QueryPack.DispatchProxy\QueryPack.DispatchProxy.csproj", "{3EE5BD2A-CD27-432C-8A00-32A7C1AB9CF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPack.Reflection.Examples", "src\QueryPack.Reflection.Examples\QueryPack.Reflection.Examples.csproj", "{E79CA40A-5906-4243-BEB1-29F67076A237}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPack.DispatchProxy.Examples", "src\QueryPack.DispatchProxy.Examples\QueryPack.DispatchProxy.Examples.csproj", "{E79CA40A-5906-4243-BEB1-29F67076A237}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

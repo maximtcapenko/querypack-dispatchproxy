@@ -1,4 +1,4 @@
-namespace QueryPack.Reflection
+namespace QueryPack.DispatchProxy
 {
     using System;
     using System.Linq.Expressions;

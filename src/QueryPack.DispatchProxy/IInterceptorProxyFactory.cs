@@ -1,4 +1,4 @@
-namespace QueryPack.Reflection
+namespace QueryPack.DispatchProxy
 {
     public interface IInterceptorProxyFactory<TContext, TTarget> 
         where TContext :class

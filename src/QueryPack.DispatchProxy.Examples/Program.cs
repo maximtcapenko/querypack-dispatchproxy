@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using QueryPack.Reflection.Extensions;
+using QueryPack.DispatchProxy.Extensions;
 
-namespace QueryPack.Reflection.Examples
+namespace QueryPack.DispatchProxy.Examples
 {
     class Program
     {

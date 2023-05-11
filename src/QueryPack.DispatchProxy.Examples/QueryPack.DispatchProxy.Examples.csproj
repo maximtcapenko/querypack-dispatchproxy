@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\QueryPack.Reflection\QueryPack.Reflection.csproj" />
+    <ProjectReference Include="..\QueryPack.DispatchProxy\QueryPack.DispatchProxy.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
