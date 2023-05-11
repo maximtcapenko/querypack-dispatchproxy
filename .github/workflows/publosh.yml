@@ -1,0 +1,52 @@
+name: publish to nuget
+on:
+  push:
+    tags:
+      - '*'       
+env:
+  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+  NUGET_SOURCE: ${{ secrets.NUGET_SOURCE }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.15
+        with:
+          versionSpec: 5.9.0
+
+      - name: Fetch all history for all tags and branches
+        shell: bash
+        run: |
+          git fetch --prune --unshallow
+
+      - name: Use GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.15
+
+      - name: Install Dependencies
+        shell: bash
+        working-directory: src/QueryPack.DispatchProxy
+        run: dotnet restore --packages './packages'
+
+      - name: Pack
+        shell: bash
+        working-directory: src/QueryPack.DispatchProxy
+        run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }} --output build/
+
+      - name: Publish nupkg
+        shell: bash
+        working-directory: src/QueryPack.DispatchProxy
+        run: dotnet nuget push build/*.nupkg --source $NUGET_SOURCE --api-key $NUGET_API_KEY

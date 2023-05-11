@@ -7,7 +7,7 @@ dotnet add package QueryPack.DispatchProxy
 ```
 2. Add interception configuration
 ```c#
-class EntityIntecepterProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
+class EntityInteceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
 {
     public void AddInterceptor(IInterceptorBuilder<Context, IEntityService> interceptorBuilder)
     {
@@ -25,9 +25,16 @@ class EntityIntecepterProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Conte
 ```
 3. Register interception configuration in `Startup`
 ```c#
- services.AddInterceptorFor(new EntityIntecepterProxyFactoryBuilder());
+ services.AddInterceptorFor(new EntityInteceptorProxyFactoryBuilder());
 ```
 4. Service method call
 ```c#
 IEntityService entitySerice;
 var result = await entitySerice.CreateAsync("some_id", new EntityArg(), CancellationToken.None);
+```
+5. Use cases
+- `Access Control`: Verify if the current user has the necessary permissions to invoke a specific method.
+- `Input Validation`: Validate the input parameters of the invoked method to ensure they meet the required format or constraints.
+- `Output Validation`: Validate the output of the invoked method to ensure it meets the expected format or constraints.
+- `Data Replication`: Use the result of the method execution to replicate data to other data sources.
+- `Event Sourcing`: Generate an event before or after the method is executed to capture and store the changes made to the data.

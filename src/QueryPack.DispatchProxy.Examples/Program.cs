@@ -14,13 +14,12 @@ namespace QueryPack.DispatchProxy.Examples
             var services = new ServiceCollection();
             services.AddTransient<IEntityService, EntityService>();
             services.AddSingleton<Context>();
-            services.AddInterceptorFor(new EntityIntecepterProxyFactoryBuilder());
+            services.AddInterceptorFor(new EntityInteceptorProxyFactoryBuilder());
 
             var provider = services.BuildServiceProvider();
             var entitySerice = provider.GetRequiredService<IEntityService>();
             var result = await entitySerice.CreateAsync("1", new EntityArg(), CancellationToken.None);
             await entitySerice.UpdateAsync("2", new EntityArg(), CancellationToken.None);
-            Console.WriteLine("Hello, World!");
         }
 
         static Task<EntityResult> CreateAsync(string id, EntityArg arg, CancellationToken token)
@@ -60,7 +59,7 @@ namespace QueryPack.DispatchProxy.Examples
     class EntityArg { }
     class Context { }
 
-    class EntityIntecepterProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
+    class EntityInteceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
     {
         public void AddInterceptor(IInterceptorBuilder<Context, IEntityService> interceptorBuilder)
         {
@@ -69,11 +68,11 @@ namespace QueryPack.DispatchProxy.Examples
                 async (ctx, service, id, arg, token, invoker) =>
             {
                 Console.WriteLine($"Before method call {invoker.MethodName}");
-                var r = await invoker.Invoke();
+                var result = await invoker.Invoke();
 
                 Console.WriteLine("After method is executed");
-                Console.WriteLine($"{r.Id}");
-                return r;
+                Console.WriteLine($"{result.Id}");
+                return result;
             })
             .OnMethodExecuting<string, EntityArg, CancellationToken, Task>(e => e.UpdateAsync,
              async (ctx, service, id, arg, token, invoker) =>
