@@ -10,6 +10,7 @@ namespace QueryPack.DispatchProxy.Examples
     {
         static async Task Main(string[] args)
         {
+
             var services = new ServiceCollection();
             services.AddTransient<IEntityService, EntityService>();
             services.AddSingleton<Context>();
@@ -18,7 +19,7 @@ namespace QueryPack.DispatchProxy.Examples
             var provider = services.BuildServiceProvider();
             var entitySerice = provider.GetRequiredService<IEntityService>();
             var result = await entitySerice.CreateAsync("1", new EntityArg(), CancellationToken.None);
-
+            await entitySerice.UpdateAsync("2", new EntityArg(), CancellationToken.None);
             Console.WriteLine("Hello, World!");
         }
 
@@ -33,19 +34,27 @@ namespace QueryPack.DispatchProxy.Examples
     interface IEntityService
     {
         Task<EntityResult> CreateAsync(string id, EntityArg arg, CancellationToken token);
+        Task UpdateAsync(string id, EntityArg arg, CancellationToken token);
     }
 
     class EntityService : IEntityService
     {
         public Task<EntityResult> CreateAsync(string id, EntityArg arg, CancellationToken token)
         {
-            return Task.FromResult(new EntityResult() { Id = 1 });
+            Console.WriteLine("Executing method CreateAsync");
+            return Task.FromResult(new EntityResult() { Id = id });
+        }
+
+        public Task UpdateAsync(string id, EntityArg arg, CancellationToken token)
+        {
+            Console.WriteLine("Executing method UpdateAsync");
+            return Task.CompletedTask;
         }
     }
 
     class EntityResult
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
     }
 
     class EntityArg { }
@@ -56,13 +65,24 @@ namespace QueryPack.DispatchProxy.Examples
         public void AddInterceptor(IInterceptorBuilder<Context, IEntityService> interceptorBuilder)
         {
             interceptorBuilder
-            .InterceptMethodOnExecuted<string, EntityArg, CancellationToken, Task<EntityResult>>(e => e.CreateAsync,
-                async (ctx, service, id, arg, token, result) =>
+            .OnMethodExecuting<string, EntityArg, CancellationToken, Task<EntityResult>>(e => e.CreateAsync,
+                async (ctx, service, id, arg, token, invoker) =>
             {
-                var r = await result;
+                Console.WriteLine($"Before method call {invoker.MethodName}");
+                var r = await invoker.Invoke();
+
+                Console.WriteLine("After method is executed");
                 Console.WriteLine($"{r.Id}");
                 return r;
-            });
+            })
+            .OnMethodExecuting<string, EntityArg, CancellationToken, Task>(e => e.UpdateAsync,
+             async (ctx, service, id, arg, token, invoker) =>
+             {
+                 Console.WriteLine($"Before method call {invoker.MethodName}");
+                 await invoker.Invoke();
+                 Console.WriteLine("After method is executed");
+
+             });
         }
     }
 }
