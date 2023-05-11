@@ -1,5 +1,5 @@
 # QueryPack.DispatchProxy 
-Simple interception implementation based on System.Reflection.DispatchProxy. Allows you to create type-safe interceptors for individual methods. Supports standard dependency injection. Has direct access to intercepted instance.
+Simple interception implementation based on `System.Reflection.DispatchProxy`. Allows you to create type-safe interceptors for individual methods. Supports standard dependency injection. Has direct access to intercepted instance.
 
 ## Getting Started
 1. Install the package into your project
