@@ -26,7 +26,7 @@ class EntityInterceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Cont
 ```
 3. Register interception configuration in `Startup`
 ```c#
- services.AddInterceptorFor(new EntityInteceptorProxyFactoryBuilder());
+ services.AddInterceptorFor(new EntityInterceptorProxyFactoryBuilder());
 ```
 4. Service method call
 ```c#
