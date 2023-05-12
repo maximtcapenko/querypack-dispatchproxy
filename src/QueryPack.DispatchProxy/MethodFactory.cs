@@ -13,11 +13,22 @@ namespace QueryPack.DispatchProxy
             var instanceParameter = Expression.Parameter(typeof(object), "target");
             var argumentsParameter = Expression.Parameter(typeof(object[]), "arguments");
 
-            var call = Expression.Call(
-                Expression.Convert(instanceParameter, method.DeclaringType),
-                method,
-                CreateParameterExpressions(method, argumentsParameter));
+            MethodCallExpression call;
 
+            if (method.IsStatic)
+            {
+                call = Expression.Call(null,
+                              method,
+                              CreateParameterExpressions(method, argumentsParameter));
+            }
+            else
+            {
+                call = Expression.Call(
+                  Expression.Convert(instanceParameter, method.DeclaringType),
+                  method,
+                  CreateParameterExpressions(method, argumentsParameter));
+            }
+            
             var lambda = Expression.Lambda<Func<object, object[], T>>(
                 Expression.Convert(call, typeof(T)),
                 instanceParameter,
