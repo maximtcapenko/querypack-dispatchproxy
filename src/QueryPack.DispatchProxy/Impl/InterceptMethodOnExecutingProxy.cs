@@ -4,6 +4,7 @@ namespace QueryPack.DispatchProxy.Impl
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Reflection;
+    using Internal;
 
     internal class InterceptMethodOnExecutingProxy<TContext, TTarget> : IInterceptorProxy<TContext, TTarget>
         where TTarget : class

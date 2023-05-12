@@ -4,7 +4,7 @@ namespace QueryPack.DispatchProxy.Impl
     using System.Collections.Generic;
     using System.Linq.Expressions;
     using Microsoft.Extensions.DependencyInjection;
-
+    
     internal class InterceptorBuilderImpl<TContext, TTarget> : IInterceptorBuilder<TContext, TTarget>
         where TContext : class
         where TTarget : class

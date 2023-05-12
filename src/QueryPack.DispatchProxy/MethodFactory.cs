@@ -6,7 +6,7 @@ namespace QueryPack.DispatchProxy
     using System.Linq.Expressions;
     using System.Reflection;
 
-    public static class MethodFactory
+    internal static class MethodFactory
     {
         public static Func<object, object[], T> CreateGenericMethod<T>(MethodInfo method)
         {
@@ -24,33 +24,6 @@ namespace QueryPack.DispatchProxy
                 argumentsParameter);
 
             return lambda.Compile();
-        }
-
-        public static Action<TEntity, TProperty> CreateSetter<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> selector)
-        {
-            var param = Expression.Parameter(typeof(TProperty));
-            var tree = GetSetterExpressionTree(selector.Body as MemberExpression);
-
-            tree.Add(Expression.Invoke(CreateSetterInternal(selector), selector.Parameters.First(), param));
-
-            var block = Expression.Block(tree);
-
-            return Expression.Lambda<Action<TEntity, TProperty>>(block, selector.Parameters.First(), param).Compile();
-        }
-
-        public static Func<TEntity, TProperty> CreateGetter<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> selector)
-        {
-            var tree = GetGetterExpressionTree(selector.Body as MemberExpression);
-            var block = Expression.Block(tree);
-
-            return Expression.Lambda<Func<TEntity, TProperty>>(block, selector.Parameters.First()).Compile();
-        }
-
-        private static Expression<Action<TEntity, TProperty>> CreateSetterInternal<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> selector)
-        {
-            var valueParam = Expression.Parameter(typeof(TProperty));
-            var body = Expression.Assign(selector.Body, valueParam);
-            return Expression.Lambda<Action<TEntity, TProperty>>(body, selector.Parameters.Single(), valueParam);
         }
 
         private static Expression[] CreateParameterExpressions(MethodInfo method, Expression argumentsParameter)

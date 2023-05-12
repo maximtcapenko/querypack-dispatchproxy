@@ -7,8 +7,17 @@ namespace QueryPack.DispatchProxy.Extensions
     using Internal;
     using System.Reflection;
 
+    /// <summary>
+    /// Service Collection Extensions
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Auto adding and configuring interceptor builders in given assemblies
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="assemblies"></param>
+        /// <returns></returns>
         public static IServiceCollection AddInterceptors(this IServiceCollection self, params Assembly[] assemblies)
         {
             var method = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddInterceptorFor));
@@ -26,6 +35,14 @@ namespace QueryPack.DispatchProxy.Extensions
             return self;
         }
 
+        /// <summary>
+        /// Adds and configures interceptor builder
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <typeparam name="TTarget"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="factoryBuilder"></param>
+        /// <returns></returns>
         public static IServiceCollection AddInterceptorFor<TContext, TTarget>(this IServiceCollection self,
             InterceptorProxyFactoryBuilder<TContext, TTarget> factoryBuilder)
             where TContext : class
