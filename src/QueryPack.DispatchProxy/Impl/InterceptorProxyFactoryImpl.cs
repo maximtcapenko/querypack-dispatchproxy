@@ -16,8 +16,7 @@ namespace QueryPack.DispatchProxy.Impl
 
         public InterceptorProxyFactoryImpl(Expression method, Delegate interceptor, IMethodInvokerFactory<TTarget> invokerFactory)
         {
-            var methodResolver = new MethodInfoResolver();
-            _method = methodResolver.Resolve(method);
+            _method = MethodInfoResolver.Resolve<TTarget>(method);
             _interceptor = interceptor;
             _invokerFactory = invokerFactory;
         }

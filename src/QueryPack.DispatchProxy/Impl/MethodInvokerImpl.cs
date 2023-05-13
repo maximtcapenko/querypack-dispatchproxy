@@ -1,9 +1,10 @@
-using System;
-using System.Collections.Concurrent;
-using System.Reflection;
-
 namespace QueryPack.DispatchProxy.Impl
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Reflection;
+    using Internal;
+
     internal class MethodInvokerImpl<TTarget, TResult> : IMethodInvoker<TResult>
         where TTarget : class
     {
