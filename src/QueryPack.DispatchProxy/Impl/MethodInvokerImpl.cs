@@ -1,6 +1,7 @@
 namespace QueryPack.DispatchProxy.Impl
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Concurrent;
     using System.Reflection;
     using Internal;
@@ -13,6 +14,8 @@ namespace QueryPack.DispatchProxy.Impl
         private readonly MethodInfo _method;
 
         public string MethodName => _method.Name;
+        public IEnumerable<Attribute> CustomAttributes => _method.GetCustomAttributes();
+
         private static ConcurrentDictionary<MethodInfo, Delegate> _interceptors = new ConcurrentDictionary<MethodInfo, Delegate>();
 
         public MethodInvokerImpl(TTarget target, MethodInfo method, params object[] args)

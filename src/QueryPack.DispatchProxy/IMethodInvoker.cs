@@ -1,5 +1,8 @@
 namespace QueryPack.DispatchProxy
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// Base method invoker abstraction
     /// </summary>
@@ -19,5 +22,9 @@ namespace QueryPack.DispatchProxy
         /// Method name
         /// </summary>
         string MethodName { get; }
+        /// <summary>
+        /// Get method custom attributes collection
+        /// </summary>
+        IEnumerable<Attribute> CustomAttributes { get; }
     }
 }
