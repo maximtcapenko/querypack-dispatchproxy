@@ -51,29 +51,31 @@ namespace QueryPack.DispatchProxy.Extensions
             var builder = new InterceptorBuilderImpl<TContext, TTarget>(self);
             factoryBuilder.AddInterceptor(builder);
 
-            var regestry = self.FirstOrDefault(e => e.ServiceType == typeof(TTarget));
-            self.Remove(regestry);
-            if (regestry.ImplementationType != null)
+            var registries = self.Where(e => e.ServiceType == typeof(TTarget)).ToList();
+            foreach (var registry in registries)
             {
-                var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeImplementationTransient), BindingFlags.Static | BindingFlags.NonPublic);
-                self.Add(new ServiceDescriptor(regestry.ImplementationType, regestry.ImplementationType, regestry.Lifetime));
+                self.Remove(registry);
+                if (registry.ImplementationType != null)
+                {
+                    var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeImplementationTransient), BindingFlags.Static | BindingFlags.NonPublic);
+                    self.Add(new ServiceDescriptor(registry.ImplementationType, registry.ImplementationType, registry.Lifetime));
 
-                var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget), regestry.ImplementationType);
-                addMethodGeneric.Invoke(null, new[] { self });
+                    var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget), registry.ImplementationType);
+                    addMethodGeneric.Invoke(null, new[] { self });
+                }
+                if (registry.ImplementationFactory != null)
+                {
+                    var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeFactoryTransient), BindingFlags.Static | BindingFlags.NonPublic);
+                    var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
+                    addMethodGeneric.Invoke(null, new object[] { self, registry.ImplementationFactory });
+                }
+                if (registry.ImplementationInstance != null)
+                {
+                    var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddInstanceTransient), BindingFlags.Static | BindingFlags.NonPublic);
+                    var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
+                    addMethodGeneric.Invoke(null, new object[] { self, registry.ImplementationInstance });
+                }
             }
-            if (regestry.ImplementationFactory != null)
-            {
-                var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeFactoryTransient), BindingFlags.Static | BindingFlags.NonPublic);
-                var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
-                addMethodGeneric.Invoke(null, new object[] { self, regestry.ImplementationFactory });
-            }
-            if (regestry.ImplementationInstance != null)
-            {
-                var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddInstanceTransient), BindingFlags.Static | BindingFlags.NonPublic);
-                var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
-                addMethodGeneric.Invoke(null, new object[] { self, regestry.ImplementationInstance });
-            }
-
             return self;
         }
 
