@@ -10,7 +10,7 @@ namespace QueryPack.DispatchProxy.Impl
         where TTarget : class
     {
         private readonly IServiceCollection _services;
-        private List<Expression> _registeredInterceptors = new List<Expression>();
+        private readonly List<Expression> _registeredInterceptors = new List<Expression>();
 
         public InterceptorBuilderImpl(IServiceCollection services)
         {

@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPack.DispatchProxy", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPack.DispatchProxy.Examples", "src\QueryPack.DispatchProxy.Examples\QueryPack.DispatchProxy.Examples.csproj", "{E79CA40A-5906-4243-BEB1-29F67076A237}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7F289CA8-3BA9-4438-BF29-E72181D85FB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryPack.DispatchProxy.Tests", "tests\QueryPack.DispatchProxy.Tests\QueryPack.DispatchProxy.Tests.csproj", "{93D2D0D2-6817-41A2-B364-550CF07CCFB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,9 +33,14 @@ Global
 		{E79CA40A-5906-4243-BEB1-29F67076A237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E79CA40A-5906-4243-BEB1-29F67076A237}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E79CA40A-5906-4243-BEB1-29F67076A237}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93D2D0D2-6817-41A2-B364-550CF07CCFB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93D2D0D2-6817-41A2-B364-550CF07CCFB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93D2D0D2-6817-41A2-B364-550CF07CCFB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93D2D0D2-6817-41A2-B364-550CF07CCFB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3EE5BD2A-CD27-432C-8A00-32A7C1AB9CF1} = {40C46F7D-58B2-4BDB-9395-E208AC3C8F31}
 		{E79CA40A-5906-4243-BEB1-29F67076A237} = {40C46F7D-58B2-4BDB-9395-E208AC3C8F31}
+		{93D2D0D2-6817-41A2-B364-550CF07CCFB0} = {7F289CA8-3BA9-4438-BF29-E72181D85FB7}
 	EndGlobalSection
 EndGlobal

@@ -11,8 +11,8 @@ namespace QueryPack.DispatchProxy.Impl
         where TTarget : class
     {
         private readonly MethodInfo _method;
-        private Delegate _interceptor;
-        private IMethodInvokerFactory<TTarget> _invokerFactory;
+        private readonly Delegate _interceptor;
+        private readonly IMethodInvokerFactory<TTarget> _invokerFactory;
 
         public InterceptorProxyFactoryImpl(Expression method, Delegate interceptor, IMethodInvokerFactory<TTarget> invokerFactory)
         {
@@ -21,9 +21,7 @@ namespace QueryPack.DispatchProxy.Impl
             _invokerFactory = invokerFactory;
         }
 
-        public IInterceptorProxy<TContext, TTarget> Create()
-        {
-            return new InterceptMethodOnExecutingProxy<TContext, TTarget>(_method, _interceptor, _invokerFactory);
-        }
+        public IInterceptorProxy<TContext, TTarget> Create() 
+            => new InterceptMethodOnExecutingProxy<TContext, TTarget>(_method, _interceptor, _invokerFactory);
     }
 }
