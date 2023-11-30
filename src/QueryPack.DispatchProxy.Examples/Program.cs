@@ -12,7 +12,7 @@
         {
             var services = new ServiceCollection();
             services.AddTransient<IEntityService, EntityService>();
-            services.AddSingleton<Context>();
+            services.AddSingleton<Dependency>();
             services.AddInterceptors(typeof(Program).Assembly);
 
             var provider = services.BuildServiceProvider();
@@ -54,11 +54,11 @@
     }
 
     class EntityArg { }
-    class Context { }
+    class Dependency { }
 
-    class EntityInterceptorProxyFactoryBuilder : InterceptorProxyFactoryBuilder<Context, IEntityService>
+    class EntityInterceptorProxyFactoryBuilder : IInterceptorProxyFactoryBuilder<Dependency, IEntityService>
     {
-        public void AddInterceptor(IInterceptorBuilder<Context, IEntityService> interceptorBuilder)
+        public void AddInterceptor(IInterceptorBuilder<Dependency, IEntityService> interceptorBuilder)
         {
             interceptorBuilder
             .OnMethodExecuting<string, EntityArg, CancellationToken, Task<EntityResult>>(e => e.CreateAsync,

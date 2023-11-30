@@ -13,7 +13,8 @@ namespace QueryPack.DispatchProxy.Impl
         private readonly Delegate _delegate;
         private readonly MethodInfo _method;
         private readonly IMethodInvokerFactory<TTarget> _invokerFactory;
-        private static ConcurrentDictionary<MethodInfo, Func<object, object[], object>> _interceptors = new ConcurrentDictionary<MethodInfo, Func<object, object[], object>>();
+        private static readonly ConcurrentDictionary<MethodInfo, Func<object, object[], object>> _interceptors
+            = new ConcurrentDictionary<MethodInfo, Func<object, object[], object>>();
 
         public InterceptMethodOnExecutingProxy(MethodInfo method, Delegate @delegate, IMethodInvokerFactory<TTarget> invokerFactory)
         {

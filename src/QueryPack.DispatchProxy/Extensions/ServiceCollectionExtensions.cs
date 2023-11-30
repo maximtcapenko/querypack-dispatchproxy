@@ -24,7 +24,7 @@ namespace QueryPack.DispatchProxy.Extensions
 
             foreach (var serviceType in assemblies.SelectMany(e => e.GetTypes()))
             {
-                ReflectionUtils.DoWithGenericInterfaceImpls(serviceType, typeof(InterceptorProxyFactoryBuilder<,>), (@interface, implementation, name) =>
+                ReflectionUtils.DoWithGenericInterfaceImpls(serviceType, typeof(IInterceptorProxyFactoryBuilder<,>), (@interface, implementation, name) =>
                 {
                     var genericMethod = method.MakeGenericMethod(@interface.GetGenericArguments());
                     var instance = Activator.CreateInstance(implementation);
@@ -38,70 +38,75 @@ namespace QueryPack.DispatchProxy.Extensions
         /// <summary>
         /// Adds and configures interceptor builder
         /// </summary>
-        /// <typeparam name="TContext"></typeparam>
+        /// <typeparam name="TDependency"></typeparam>
         /// <typeparam name="TTarget"></typeparam>
         /// <param name="self"></param>
         /// <param name="factoryBuilder"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInterceptorFor<TContext, TTarget>(this IServiceCollection self,
-            InterceptorProxyFactoryBuilder<TContext, TTarget> factoryBuilder)
-            where TContext : class
+        public static IServiceCollection AddInterceptorFor<TDependency, TTarget>(this IServiceCollection self,
+            IInterceptorProxyFactoryBuilder<TDependency, TTarget> factoryBuilder)
+            where TDependency : class
             where TTarget : class
         {
-            var builder = new InterceptorBuilderImpl<TContext, TTarget>(self);
+            var builder = new InterceptorBuilderImpl<TDependency, TTarget>(self);
             factoryBuilder.AddInterceptor(builder);
 
             var registries = self.Where(e => e.ServiceType == typeof(TTarget)).ToList();
+
+            var addImplMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeImplementationTransient), BindingFlags.Static | BindingFlags.NonPublic);
+            var addFactoryMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeFactoryTransient), BindingFlags.Static | BindingFlags.NonPublic);
+            var addInstanceMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddInstanceTransient), BindingFlags.Static | BindingFlags.NonPublic);
+
             foreach (var registry in registries)
             {
                 self.Remove(registry);
                 if (registry.ImplementationType != null)
                 {
-                    var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeImplementationTransient), BindingFlags.Static | BindingFlags.NonPublic);
                     self.Add(new ServiceDescriptor(registry.ImplementationType, registry.ImplementationType, registry.Lifetime));
 
-                    var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget), registry.ImplementationType);
+                    var addMethodGeneric = addImplMethod.MakeGenericMethod(typeof(TDependency), typeof(TTarget), registry.ImplementationType);
                     addMethodGeneric.Invoke(null, new[] { self });
                 }
                 if (registry.ImplementationFactory != null)
                 {
-                    var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddTypeFactoryTransient), BindingFlags.Static | BindingFlags.NonPublic);
-                    var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
+                    var addMethodGeneric = addFactoryMethod.MakeGenericMethod(typeof(TDependency), typeof(TTarget));
                     addMethodGeneric.Invoke(null, new object[] { self, registry.ImplementationFactory });
                 }
                 if (registry.ImplementationInstance != null)
                 {
-                    var addMethod = typeof(ServiceCollectionExtensions).GetMethod(nameof(AddInstanceTransient), BindingFlags.Static | BindingFlags.NonPublic);
-                    var addMethodGeneric = addMethod.MakeGenericMethod(typeof(TContext), typeof(TTarget));
+                    var addMethodGeneric = addInstanceMethod.MakeGenericMethod(typeof(TDependency), typeof(TTarget));
                     addMethodGeneric.Invoke(null, new object[] { self, registry.ImplementationInstance });
                 }
             }
+
             return self;
         }
 
-        private static void AddTypeImplementationTransient<TContext, TInterface, TImplementation>(IServiceCollection services)
-            where TContext : class
+        private static void AddTypeImplementationTransient<TDependency, TInterface, TImplementation>(IServiceCollection services)
+            where TDependency : class
             where TInterface : class
-            where TImplementation : class, TInterface
-        {
-            services.AddTransient(s =>
-            InterceptorProxyFactory.Create(s.GetRequiredService<TContext>(), s.GetServices<IInterceptorProxyFactory<TContext, TInterface>>(), s.GetRequiredService<TImplementation>()));
-        }
+            where TImplementation : class, TInterface 
+                => services.AddTransient(s => 
+                InterceptorProxyFactory.Create(s.GetRequiredService<TDependency>(), 
+                s.GetServices<IInterceptorProxyFactory<TDependency, TInterface>>(),
+                s.GetRequiredService<TImplementation>()));
+        
 
-        private static void AddTypeFactoryTransient<TContext, TInterface>(IServiceCollection services, Func<IServiceProvider, object> factory)
-            where TContext : class
+        private static void AddTypeFactoryTransient<TDependency, TInterface>(IServiceCollection services, Func<IServiceProvider, object> factory)
+            where TDependency : class
             where TInterface : class
-        {
-            services.AddTransient(s =>
-            InterceptorProxyFactory.Create(s.GetRequiredService<TContext>(), s.GetServices<IInterceptorProxyFactory<TContext, TInterface>>(), (TInterface)factory(s)));
-        }
+                => services.AddTransient(s => 
+                InterceptorProxyFactory.Create(s.GetRequiredService<TDependency>(), 
+                s.GetServices<IInterceptorProxyFactory<TDependency, TInterface>>(), 
+                (TInterface)factory(s)));
+        
 
-        private static void AddInstanceTransient<TContext, TInterface>(IServiceCollection services, object instance)
-            where TContext : class
-            where TInterface : class
-        {
-            services.AddTransient(s =>
-            InterceptorProxyFactory.Create(s.GetRequiredService<TContext>(), s.GetServices<IInterceptorProxyFactory<TContext, TInterface>>(), (TInterface)instance));
-        }
+        private static void AddInstanceTransient<TDependency, TInterface>(IServiceCollection services, object instance)
+            where TDependency : class
+            where TInterface : class 
+                => services.AddTransient(s => 
+                InterceptorProxyFactory.Create(s.GetRequiredService<TDependency>(), 
+                s.GetServices<IInterceptorProxyFactory<TDependency, TInterface>>(), 
+                (TInterface)instance));
     }
 }

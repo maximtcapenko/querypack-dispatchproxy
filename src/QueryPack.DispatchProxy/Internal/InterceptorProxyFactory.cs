@@ -6,15 +6,15 @@ namespace QueryPack.DispatchProxy.Internal
     
      internal class InterceptorProxyFactory
     {
-        public static TInterface Create<TContext, TInterface, TImplementation>(TContext context, 
-            IEnumerable<IInterceptorProxyFactory<TContext, TInterface>> factories, TImplementation implementation) 
-            where TContext : class
+        public static TInterface Create<TDependency, TInterface, TImplementation>(TDependency dependency, 
+            IEnumerable<IInterceptorProxyFactory<TDependency, TInterface>> factories, TImplementation implementation) 
+            where TDependency : class
             where TInterface : class
             where TImplementation : class, TInterface
         {
-            var proxy = DispatchProxy.Create<TInterface, InterceptorProxy<TContext, TInterface>>() as InterceptorProxy<TContext, TInterface>;
+            var proxy = DispatchProxy.Create<TInterface, InterceptorProxy<TDependency, TInterface>>() as InterceptorProxy<TDependency, TInterface>;
             proxy.Target = implementation;
-            proxy.Context = context;
+            proxy.Context = dependency;
             proxy.Interceptors = factories.Select(e => e.Create());
 
             return proxy as TInterface;
